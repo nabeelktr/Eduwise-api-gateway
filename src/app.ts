@@ -5,6 +5,8 @@ import { Application } from 'express';
 import helmet from 'helmet';
 import logger from 'morgan'
 import userRoute from './modules/user/route';
+import authRoute from './modules/auth/route';
+import cookieParser from 'cookie-parser';
 
 class App{
 
@@ -22,10 +24,12 @@ class App{
         this.app.use(compression());
         this.app.use(helmet());
         this.app.use(logger('dev'));
+        this.app.use(cookieParser())
     }
 
     private routes():void{
-        this.app.use('/api/v1/user', userRoute)
+        this.app.use('/api/v1/user', userRoute);
+        this.app.use('/api/v1/auth', authRoute);
     }
 
     public startServer(port: number): void {

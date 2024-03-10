@@ -2,6 +2,7 @@ import {Request, Response, NextFunction} from 'express'
 import { UserClient } from './config/grpc-client/user.client'
 import { generateTokenOptions } from '../../utils/generateTokenOptions';
 
+
 export default class userController{
 
     register = (req: Request, res: Response, next: NextFunction) => {
@@ -34,8 +35,8 @@ export default class userController{
             res.status(401).json({success: false, message: err.details})
         }else{
             const options = generateTokenOptions()
+            res.cookie('refreshToken', result?.refreshToken, options.refreshTokenOptions);
             res.cookie('accessToken', result?.accessToken, options.accessTokenOptions);
-            res.cookie('accessToken', result?.refreshToken, options.refreshTokenOptions);
             res.json(result)
         }
     })
@@ -50,4 +51,5 @@ export default class userController{
             next(e)
         }
     }
+
 }
