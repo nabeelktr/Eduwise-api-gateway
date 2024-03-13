@@ -10,6 +10,7 @@ const controller = new userController();
 userRoute.post('/register', controller.register)
 userRoute.post('/activate', controller.activate)
 userRoute.post('/login', controller.login)
+userRoute.get('/me', controller.getUser)
 userRoute.get('/logout', isValidated, authorizeRoles('user'), controller.logout)
 
 

@@ -20,7 +20,10 @@ class App{
 
     private applyMiddleware(): void{
         this.app.use(express.json());
-        this.app.use(cors());
+        this.app.use(cors({
+            origin: process.env.CORS_ORIGIN,
+            credentials: true,
+        }));
         this.app.use(compression());
         this.app.use(helmet());
         this.app.use(logger('dev'));

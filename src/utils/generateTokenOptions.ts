@@ -18,13 +18,15 @@ export const generateTokenOptions = () => {
         expires: new Date(Date.now() + accessExpire * 60 * 1000),
         maxAge: accessExpire * 60 * 1000,
         httpOnly: true,
-        sameSite: "lax"
+        sameSite: "lax",
+        secure: true
     } 
     const refreshTokenOptions: ItokenOptions = {
         expires: new Date(Date.now() + refreshExpire * 24 * 60 * 60 * 1000),
         maxAge: refreshExpire * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "lax"
+        sameSite: "lax",
+        secure: true
     } 
 
     // only set true in production

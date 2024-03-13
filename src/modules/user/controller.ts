@@ -1,6 +1,7 @@
 import {Request, Response, NextFunction} from 'express'
 import { UserClient } from './config/grpc-client/user.client'
 import { generateTokenOptions } from '../../utils/generateTokenOptions';
+import { AuthClient } from '../auth/config/grpc-client/auth.client';
 
 
 export default class userController{
@@ -8,22 +9,19 @@ export default class userController{
     register = (req: Request, res: Response, next: NextFunction) => {
         UserClient.Register(req.body, (err, result) => {
         if(err){
-            console.error(err);
-            res.json(err)
-            next(err)
+            res.status(401).json({message: err})
+        }else{
+        res.status(201).json(result)
         }
-        res.json(result)
     })
     }
 
     activate = (req: Request, res: Response, next: NextFunction) => {
         UserClient.ActivateUser(req.body, (err, result) => {
         if(err){
-            console.error(err);
-            res.json(err)
-            next(err)
+            res.status(401).json({message: err})
         }
-        res.json(result)
+        res.status(201).json(result)
     })
     }
 
@@ -37,7 +35,7 @@ export default class userController{
             const options = generateTokenOptions()
             res.cookie('refreshToken', result?.refreshToken, options.refreshTokenOptions);
             res.cookie('accessToken', result?.accessToken, options.accessTokenOptions);
-            res.json(result)
+            res.status(201).json(result)
         }
     })
     }
@@ -52,4 +50,24 @@ export default class userController{
         }
     }
 
+    getUser = (req: Request, res: Response, next: NextFunction) => {
+        try{
+            AuthClient.IsAuthenticated({token: req.cookies?.accessToken}, (err, result) => {
+                if(err){
+                    res.status(401).json({success: false, message: err})
+                }else{
+                    const userId = result?.userId
+                    UserClient.GetUser({id: userId}, (err, result) => {
+                        if(err){
+                            res.status(404).json({success: false, message: err})
+                        }else{
+                            res.status(201).json(result);
+                        }
+                    })
+                }
+            })
+        }catch(e:any){
+            next(e);
+        }
+    }
 }

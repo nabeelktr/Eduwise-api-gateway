@@ -15,3 +15,6 @@ const UserClient = new grpcObject.user_package.User(
 )
 
 export{UserClient}
+
+// dns:///grpc-server:9000
+

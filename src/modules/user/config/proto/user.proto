@@ -6,6 +6,19 @@ service User {
   rpc Register(RegisterRequest) returns(RegisterResponse) {};
   rpc ActivateUser(Token) returns(UserRes) {};
   rpc Login(LoginRequest) returns(LoginResponse) {};
+  rpc GetUser(GetUserRequest) returns(GetUserResponse) {};
+}
+
+message GetUserRequest{
+  string id = 1;
+}
+
+message GetUserResponse{
+  string id = 1;
+  string avatar = 3;
+  string name = 2;
+  string role = 4;
+  string is_verified = 5;
 }
 
 message UserRes{
