@@ -10,6 +10,7 @@ export const isValidated = AsyncHandler((req: CustomRequest, res: Response, next
         if(err){
             res.status(401).json({success: false, message: err})
         }else{
+            req.userId = result?.userId
             req.role = result?.role
             next()
         }

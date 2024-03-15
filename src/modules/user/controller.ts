@@ -2,6 +2,7 @@ import {Request, Response, NextFunction} from 'express'
 import { UserClient } from './config/grpc-client/user.client'
 import { generateTokenOptions } from '../../utils/generateTokenOptions';
 import { AuthClient } from '../auth/config/grpc-client/auth.client';
+import { CustomRequest } from './interfaces/IRequest';
 
 
 export default class userController{
@@ -54,20 +55,54 @@ export default class userController{
         try{
             AuthClient.IsAuthenticated({token: req.cookies?.accessToken}, (err, result) => {
                 if(err){
-                    res.status(401).json({success: false, message: err})
+                    res.status(401).json({success: false, message: err.details})
                 }else{
                     const userId = result?.userId
                     UserClient.GetUser({id: userId}, (err, result) => {
                         if(err){
-                            res.status(404).json({success: false, message: err})
+                            res.status(404).json({success: false, message: err.details})
                         }else{
-                            res.status(201).json(result);
+                            res.status(201).json({user: result});
                         }
                     })
                 }
             })
         }catch(e:any){
             next(e);
+        }
+    }
+
+    socialAuth = (req: Request, res: Response, next: NextFunction) => {
+        try{
+            const {email, name, avatar} = req.body
+            UserClient.SocialAuth({name, email, avatar}, (err, result) => {
+                if(err){
+                    res.status(401).json({success: false, message: err.details})
+                }else{
+                    const options = generateTokenOptions()
+                    res.cookie('refreshToken', result?.refreshToken, options.refreshTokenOptions);
+                    res.cookie('accessToken', result?.accessToken, options.accessTokenOptions);
+                    res.status(201).json(result)
+                }
+            })
+        }catch(e:any){
+            next(e)
+        }
+    }
+
+    updateUserInfo = (req: CustomRequest, res: Response, next: NextFunction) => {
+        try{ 
+            const {name} = req.body;
+            const userId = req.userId;
+            UserClient.UpdateUserInfo({userId, name}, (err, result) => {
+                if(err){
+                    res.status(401).json({success: false, message: err.details})
+                }else{
+                    res.status(201).json(result)
+                }
+            })
+        }catch(e:any){
+            next(e)
         }
     }
 }

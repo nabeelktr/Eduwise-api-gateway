@@ -15,8 +15,8 @@ export const generateTokenOptions = () => {
     const refreshExpire = parseInt(process.env.REFRESH_TOKEN_EXPIRE || '1200', 10)
 
     const accessTokenOptions: ItokenOptions = {
-        expires: new Date(Date.now() + accessExpire * 60 * 1000),
-        maxAge: accessExpire * 60 * 1000,
+        expires: new Date(Date.now() + accessExpire * 60 * 60 * 1000),
+        maxAge: accessExpire * 60 * 60 * 1000,
         httpOnly: true,
         sameSite: "lax",
         secure: true
