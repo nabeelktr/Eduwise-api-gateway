@@ -9,6 +9,21 @@ service User {
   rpc GetUser(GetUserRequest) returns(GetUserResponse) {};
   rpc SocialAuth(SocialReq) returns(LoginResponse) {};
   rpc UpdateUserInfo(UpdateUserInfoReq) returns(UserRes) {};
+  rpc UpdateAvatar(AvatarReq) returns(UserRes) {};
+  rpc UpdatePassword(PasswordReq) returns(UserRes) {};
+}
+
+message PasswordReq{
+  string user_id = 1;
+  string old_password =2;
+  string new_password = 3;
+}
+
+message AvatarReq {
+  bytes data = 1;
+  string filename = 2;
+  string mimetype = 3;
+  string id = 4;
 }
 
 message UpdateUserInfoReq{

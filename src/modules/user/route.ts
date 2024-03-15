@@ -1,7 +1,10 @@
 import express,{Application} from 'express'
 import userController from './controller';
 import { authorizeRoles, isValidated } from '../auth/controller';
+import multer from 'multer';
 
+const storage = multer.memoryStorage()
+const upload = multer({storage})
 const userRoute:Application = express();
 
 const controller = new userController();
@@ -14,7 +17,8 @@ userRoute.get('/me',isValidated, controller.getUser)
 userRoute.post('/social-auth', controller.socialAuth)
 userRoute.get('/logout', isValidated, controller.logout)
 userRoute.post('/update-user-info', isValidated, controller.updateUserInfo)
-// userRoute.get('/logout', isValidated, authorizeRoles('user'), controller.logout)
+userRoute.post('/update-user-avatar', isValidated, upload.single('avatar'), controller.updateUserAvatar)
+userRoute.post('/update-user-password', isValidated, controller.updateUserPassword)
 
 
 export default userRoute

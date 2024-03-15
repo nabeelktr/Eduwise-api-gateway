@@ -105,4 +105,37 @@ export default class userController{
             next(e)
         }
     }
+
+    updateUserAvatar = (req: CustomRequest, res: Response, next: NextFunction) => {
+        try{
+            const file = req.file;
+            const id = req.userId;
+            UserClient.UpdateAvatar({data: file?.buffer, filename: file?.fieldname, mimetype: file?.mimetype, id}, (err, result) => {
+                if(err){
+                    console.log('err', err);
+                    res.status(401).json({message: err.details})
+                }else{
+                    res.status(201).json(result)
+                }
+            })
+        }catch(e: any){
+            next(e)
+        }
+    }
+
+    updateUserPassword = (req: CustomRequest, res: Response, next: NextFunction) => {
+        try{
+            const {oldPassword, newPassword} = req.body;
+            const userid = req.userId;
+            UserClient.UpdatePassword({oldPassword, newPassword, userId: userid}, (err, result) => {
+                if(err){
+                    res.status(401).json({message: err.details})
+                }else{
+                    res.status(201).json(result)
+                }
+            })
+        }catch(e: any){
+            next(e)
+        }
+    }
 }
