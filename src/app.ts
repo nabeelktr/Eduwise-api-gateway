@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import logger from 'morgan'
 import userRoute from './modules/user/route';
 import authRoute from './modules/auth/route';
+import instructorRoute from './modules/instructor/route';
 import cookieParser from 'cookie-parser';
 
 class App{
@@ -33,6 +34,7 @@ class App{
     private routes():void{
         this.app.use('/api/v1/user', userRoute);
         this.app.use('/api/v1/auth', authRoute);
+        this.app.use('/api/v1/instructor', instructorRoute);
     }
 
     public startServer(port: number): void {

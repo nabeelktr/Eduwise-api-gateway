@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthClient } from "./config/grpc-client/auth.client";
-import { CustomRequest } from "./interfaces/IRequest";
+import { CustomRequest } from "../interfaces/IRequest";
 import AsyncHandler from "express-async-handler";
 import { generateTokenOptions } from "../../utils/generateTokenOptions";
 

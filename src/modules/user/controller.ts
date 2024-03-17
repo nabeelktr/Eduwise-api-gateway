@@ -2,7 +2,7 @@ import {Request, Response, NextFunction} from 'express'
 import { UserClient } from './config/grpc-client/user.client'
 import { generateTokenOptions } from '../../utils/generateTokenOptions';
 import { AuthClient } from '../auth/config/grpc-client/auth.client';
-import { CustomRequest } from './interfaces/IRequest';
+import { CustomRequest } from '../interfaces/IRequest';
 
 
 export default class userController{
