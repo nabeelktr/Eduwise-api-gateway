@@ -8,6 +8,7 @@ import userRoute from './modules/user/route';
 import authRoute from './modules/auth/route';
 import instructorRoute from './modules/instructor/route';
 import cookieParser from 'cookie-parser';
+import InstructorRabbitMQClient from './modules/instructor/rabbitmq/client';
 
 class App{
 
@@ -17,6 +18,7 @@ class App{
         this.app = express();
         this.applyMiddleware();
         this.routes();
+        InstructorRabbitMQClient.initialize();
     }
 
     private applyMiddleware(): void{
@@ -28,7 +30,7 @@ class App{
         this.app.use(compression());
         this.app.use(helmet());
         this.app.use(logger('dev'));
-        this.app.use(cookieParser())
+        this.app.use(cookieParser());
     }
 
     private routes():void{
