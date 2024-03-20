@@ -5,13 +5,14 @@ import instructorController from './controller';
 
 const storage = multer.memoryStorage()
 const upload = multer({storage})
-const userRoute:Application = express();
+const instructorRoute:Application = express();
 
 const controller = new instructorController();
 
 
-userRoute.post('/register', isValidated, upload.single('certificate'), controller.register)
+instructorRoute.post('/register', isValidated, upload.single('certificate'), controller.register)
+instructorRoute.post('/getVdoCipherOTP', controller.generateVideoUrl)
 
 
 
-export default userRoute
+export default instructorRoute

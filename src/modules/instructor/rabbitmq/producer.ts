@@ -24,12 +24,13 @@ export default class Producer {
         },
       }
     );
-
+ 
     return new Promise((res, rej) => {
         this.eventEmitter.once(uuid, async (data) => {
             const reply = JSON.parse(data.content.toString())
             const jsonString = Buffer.from(reply.data).toString('utf-8');
             const replyObject = JSON.parse(jsonString);
+            console.log(replyObject);
             res(replyObject);
         })
     })
