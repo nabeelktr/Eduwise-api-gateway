@@ -5,6 +5,7 @@ import { AuthClient } from "../auth/config/grpc-client/auth.client";
 import { CustomRequest } from "../interfaces/IRequest";
 
 export default class userController {
+  
   register = (req: Request, res: Response, next: NextFunction) => {
     UserClient.Register(req.body, (err, result) => {
       if (err) {
@@ -48,7 +49,6 @@ export default class userController {
 
   logout = (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log('logout coming');
       res.cookie("accessToken", "", { maxAge: 1 });
       res.cookie("refreshToken", "", { maxAge: 1 });
       const cookies = req.cookies;
@@ -76,7 +76,6 @@ export default class userController {
               if (err) {
                 res.status(404).json({ success: false, message: err.details });
               } else {
-                console.log(result);
                 res.status(201).json({ user: result });
               }
             });

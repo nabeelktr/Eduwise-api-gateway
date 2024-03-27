@@ -1,6 +1,6 @@
 import express,{Application} from 'express'
 import userController from './controller';
-import { authorizeRoles, isValidated } from '../auth/controller';
+import { isValidated } from '../auth/controller';
 import multer from 'multer';
 
 const storage = multer.memoryStorage()

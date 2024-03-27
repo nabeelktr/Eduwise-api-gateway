@@ -7,7 +7,6 @@ import "dotenv/config";
 export default class instructorController {
   register = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-      console.log("body", req.body);
       const body = req.body;
       const file = req.file;
       const operation = "register-instructor";
@@ -34,7 +33,6 @@ export default class instructorController {
         isVerified: response.isVerified,
         role: "instructor",
       };
-      console.log(user);
       res.status(201).json(user);
     } catch (e: any) {
       next(e);
@@ -47,7 +45,7 @@ export default class instructorController {
     next: NextFunction
   ) => {
     try {
-      const {videoId} = req.body;
+      const { videoId } = req.body;
 
       const response = await axios.post(
         `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
@@ -61,7 +59,7 @@ export default class instructorController {
       );
       res.json(response.data);
     } catch (e: any) {
-      console.log("error");
+      next(e)
     }
   };
 }

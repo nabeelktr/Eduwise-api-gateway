@@ -5,6 +5,7 @@ export default {
       url: String(process.env.RabbitMQ_Link),
       queues: {
         instructorQueue: "instructor_queue",
+        courseQueue: "course_queue",
       },
     },
   };
