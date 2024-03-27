@@ -3,15 +3,16 @@ import { UserClient } from "./config/grpc-client/user.client";
 import { generateTokenOptions } from "../../utils/generateTokenOptions";
 import { AuthClient } from "../auth/config/grpc-client/auth.client";
 import { CustomRequest } from "../interfaces/IRequest";
+import { StatusCode } from "../../interfaces/enums";
 
 export default class userController {
   
   register = (req: Request, res: Response, next: NextFunction) => {
     UserClient.Register(req.body, (err, result) => {
       if (err) {
-        res.status(401).json({ message: err });
+        res.status(StatusCode.BadRequest).json({ message: err });
       } else {
-        res.status(201).json(result);
+        res.status(StatusCode.Created).json(result);
       }
     });
   };
@@ -19,17 +20,16 @@ export default class userController {
   activate = (req: Request, res: Response, next: NextFunction) => {
     UserClient.ActivateUser(req.body, (err, result) => {
       if (err) {
-        res.status(401).json({ message: err });
+        res.status(StatusCode.BadRequest).json({ message: err });
       }
-      res.status(201).json(result);
+      res.status(StatusCode.Accepted).json(result);
     });
   };
 
   login = (req: Request, res: Response, next: NextFunction) => {
     UserClient.Login(req.body, (err, result) => {
       if (err) {
-        console.log(err.details);
-        res.status(401).json({ success: false, message: err.details });
+        res.status(StatusCode.BadRequest).json({ success: false, message: err.details });
       } else {
         const options = generateTokenOptions();
         res.cookie(
@@ -42,7 +42,7 @@ export default class userController {
           result?.accessToken,
           options.accessTokenOptions
         );
-        res.status(201).json(result);
+        res.status(StatusCode.Accepted).json(result);
       }
     });
   };
@@ -56,7 +56,7 @@ export default class userController {
         res.clearCookie(cookieName);
       }
       res
-        .status(200)
+        .status(StatusCode.OK)
         .json({ success: true, message: "Logged out successfully" });
     } catch (e: any) {
       next(e);
@@ -69,14 +69,14 @@ export default class userController {
         { token: req.cookies?.accessToken },
         (err, result) => {
           if (err) {
-            res.status(401).json({ success: false, message: err.details });
+            res.status(StatusCode.BadRequest).json({ success: false, message: err.details });
           } else {
             const userId = result?.userId;
             UserClient.GetUser({ id: userId }, (err, result) => {
               if (err) {
-                res.status(404).json({ success: false, message: err.details });
+                res.status(StatusCode.NotFound).json({ success: false, message: err.details });
               } else {
-                res.status(201).json({ user: result });
+                res.status(StatusCode.OK).json({ user: result });
               }
             });
           }
@@ -92,7 +92,7 @@ export default class userController {
       const { email, name, avatar } = req.body;
       UserClient.SocialAuth({ name, email, avatar }, (err, result) => {
         if (err) {
-          res.status(401).json({ success: false, message: err.details });
+          res.status(StatusCode.BadRequest).json({ success: false, message: err.details });
         } else {
           const options = generateTokenOptions();
           res.cookie(
@@ -105,7 +105,7 @@ export default class userController {
             result?.accessToken,
             options.accessTokenOptions
           );
-          res.status(201).json(result);
+          res.status(StatusCode.Accepted).json(result);
         }
       });
     } catch (e: any) {
@@ -119,9 +119,9 @@ export default class userController {
       const userId = req.userId;
       UserClient.UpdateUserInfo({ userId, name }, (err, result) => {
         if (err) {
-          res.status(401).json({ success: false, message: err.details });
+          res.status(StatusCode.BadRequest).json({ success: false, message: err.details });
         } else {
-          res.status(201).json(result);
+          res.status(StatusCode.Created).json(result);
         }
       });
     } catch (e: any) {
@@ -146,10 +146,9 @@ export default class userController {
         },
         (err, result) => {
           if (err) {
-            console.log("err", err);
-            res.status(401).json({ message: err.details });
+            res.status(StatusCode.BadRequest).json({ message: err.details });
           } else {
-            res.status(201).json(result);
+            res.status(StatusCode.Created).json(result);
           }
         }
       );
@@ -170,9 +169,9 @@ export default class userController {
         { oldPassword, newPassword, userId: userid },
         (err, result) => {
           if (err) {
-            res.status(401).json({ message: err.details });
+            res.status(StatusCode.BadRequest).json({ message: err.details });
           } else {
-            res.status(201).json(result);
+            res.status(StatusCode.Created).json(result);
           }
         }
       );

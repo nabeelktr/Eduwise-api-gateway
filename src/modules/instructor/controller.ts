@@ -1,8 +1,8 @@
 import { NextFunction, Response } from "express";
 import { CustomRequest } from "../interfaces/IRequest";
 import InstructorRabbitMQClient from "./rabbitmq/client";
-import axios from "axios";
 import "dotenv/config";
+import { StatusCode } from "../../interfaces/enums";
 
 export default class instructorController {
   register = async (req: CustomRequest, res: Response, next: NextFunction) => {
@@ -33,33 +33,9 @@ export default class instructorController {
         isVerified: response.isVerified,
         role: "instructor",
       };
-      res.status(201).json(user);
+      res.status(StatusCode.Created).json(user);
     } catch (e: any) {
       next(e);
-    }
-  };
-
-  generateVideoUrl = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const { videoId } = req.body;
-
-      const response = await axios.post(
-        `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
-        { ttl: 300 },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Apisecret ${process.env.VDOCIPHER_API_SECRET}`,
-          },
-        }
-      );
-      res.json(response.data);
-    } catch (e: any) {
-      next(e)
     }
   };
 }

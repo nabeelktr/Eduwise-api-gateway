@@ -4,13 +4,14 @@ import { CustomRequest } from "../interfaces/IRequest";
 import AsyncHandler from "express-async-handler";
 import { generateTokenOptions } from "../../utils/generateTokenOptions";
 import { UserRole } from "../../utils/user.entities";
+import { StatusCode } from "../../interfaces/enums";
 
 export const isValidated = AsyncHandler(
   (req: CustomRequest, res: Response, next: NextFunction) => {
     const token = req.cookies?.accessToken;
     AuthClient.IsAuthenticated({ token }, (err, result) => {
       if (err) {
-        res.status(401).json({ success: false, message: err });
+        res.status(StatusCode.Unauthorized).json({ success: false, message: err });
       } else {
         req.userId = result?.userId;
         req.role = result?.role;
@@ -25,7 +26,7 @@ export const authorizeRoles = (...roles: UserRole[]) => {
     if (req.role && Object.values(UserRole).includes(req.role as UserRole)) {
       if (!roles.includes(req.role as UserRole)) {
         res
-          .status(403)
+          .status(StatusCode.NotAcceptable)
           .json({
             success: false,
             message: `Role: ${req.role} is not allowed to access this resource`,
@@ -34,7 +35,7 @@ export const authorizeRoles = (...roles: UserRole[]) => {
       }
     } else {
       res
-        .status(403)
+        .status(StatusCode.NotAcceptable)
         .json({ success: false, message: `Invalid role provided` });
       return;
     }
@@ -51,7 +52,7 @@ export const refreshToken = (
   if (token) {
     AuthClient.RefreshToken({ token }, (err, result) => {
       if (err) {
-        res.status(401).json({ message: "Invalid refresh token" });
+        res.status(StatusCode.NotAcceptable).json({ message: "Invalid refresh token" });
       } else {
         const options = generateTokenOptions();
         res.cookie(
@@ -65,11 +66,11 @@ export const refreshToken = (
           options.refreshTokenOptions
         );
         res
-          .status(201)
+          .status(StatusCode.Created)
           .json({ success: true, message: "new token generated successfully" });
       }
     });
   } else {
-    res.status(401).json({message: "Token is missing"});
+    res.status(StatusCode.Unauthorized).json({message: "Token is missing"});
   }
 };
