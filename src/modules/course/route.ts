@@ -14,6 +14,7 @@ courseRoute.post('/create-course', isValidated, upload.single('thumbnail'), cont
 courseRoute.get('/get-courses', isValidated, controller.getCourses)
 courseRoute.post('/update-course', isValidated, upload.single("thumbnail"), controller.updateCourse)
 courseRoute.delete('/delete-course/:id', isValidated, controller.deleteCourse)
+courseRoute.delete('/get-course-wop/:id', controller.getSingleCourse)
 
 
 

@@ -6,6 +6,8 @@ import "dotenv/config";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { s3 } from "../../config/s3.config";
 import { StatusCode } from "../../interfaces/enums";
+import { BadRequestError } from "@nabeelktr/error-handler";
+
 
 export interface S3Params {
   Bucket: string;
@@ -54,7 +56,7 @@ export default class CourseController {
       const response: any = await CourseRabbitMQClient.produce(data, operation);
       res.status(StatusCode.Created).json({success: true});
     } catch (e: any) {
-      next(e);
+      throw new BadRequestError("error creating course")
     }
   };
 
@@ -69,7 +71,7 @@ export default class CourseController {
       const message: any = await CourseRabbitMQClient.produce(instructorId, operation);
       res.status(StatusCode.OK).json(JSON.parse(message.content.toString()));
     } catch (e: any) {
-      next(e);
+      throw new BadRequestError("error getting all courses")
     }
   };
 
@@ -113,7 +115,8 @@ export default class CourseController {
       const response: any = await CourseRabbitMQClient.produce(data, operation);
       res.status(StatusCode.Accepted).json(response);
     }catch(e:any){
-      next(e)
+      throw new BadRequestError("error updating course")
+
     }
   }
 
@@ -128,7 +131,24 @@ export default class CourseController {
       const response: any = await CourseRabbitMQClient.produce(courseId, operation)
       res.status(StatusCode.OK).json(response)
     }catch(e: any){
-      next(e)
+      throw new BadRequestError("error deleting course")
+    }
+  }
+
+  getSingleCourse =  async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try{
+      const courseId = req.params.id
+      const operation = "get-course-wop"
+      const response: any = await CourseRabbitMQClient.produce(courseId, operation)
+      res.status(StatusCode.OK).json(response)
+    }catch(e: any){
+      throw new BadRequestError("error getting course")
     }
   }
 }
+
+
