@@ -4,6 +4,7 @@ import rabbitmqConfig from "../../../config/rabbitmq.config";
 import Producer from "./producer";
 import { EventEmitter } from 'events'
 import Consumer from "./consumer";
+import { BadRequestError } from "@nabeelktr/error-handler";
 
 class RabbitMQClient{
     
@@ -51,7 +52,7 @@ class RabbitMQClient{
             this.isInitialized = true;
 
         }catch(e: any){
-            console.log("rabbitmq error...", e);
+            throw new BadRequestError("rabbitmq error")
         }
     }
     async produce(data: any, operation: string) {

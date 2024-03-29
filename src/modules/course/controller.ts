@@ -149,6 +149,20 @@ export default class CourseController {
       throw new BadRequestError("error getting course")
     }
   }
+
+  getAllCourses =  async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try{
+      const operation = "get-all-courses"
+      const response: any = await CourseRabbitMQClient.produce(null, operation)
+      res.status(StatusCode.OK).json(response)
+    }catch(e: any){
+      throw new BadRequestError("error getting all courses")
+    }
+  }
 }
 
 
