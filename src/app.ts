@@ -1,6 +1,6 @@
 import compression from 'compression';
 import cors from 'cors';
-import express from 'express'
+import express, { NextFunction } from 'express'
 import { Application } from 'express';
 import helmet from 'helmet';
 import logger from 'morgan'
@@ -35,6 +35,7 @@ class App{
         this.app.use(cookieParser());
         this.app.use(errorHandler)
     }
+  
 
     private routes():void{
         this.app.use('/api/v1/user', userRoute);
@@ -49,6 +50,7 @@ class App{
         })
     }
 }
+
 
 export default App;
 

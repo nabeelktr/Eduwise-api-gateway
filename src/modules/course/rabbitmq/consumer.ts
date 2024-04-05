@@ -15,7 +15,6 @@ export default class Consumer {
       this.replyQueueName,
       (message: ConsumeMessage | null) => {
         if(message){
-        console.log("the reply is..", JSON.parse(message.content.toString()));
         this.eventEmitter.emit(
           message.properties.correlationId.toString(),
           message

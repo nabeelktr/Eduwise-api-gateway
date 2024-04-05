@@ -56,7 +56,7 @@ export default class CourseController {
       const response: any = await CourseRabbitMQClient.produce(data, operation);
       res.status(StatusCode.Created).json({success: true});
     } catch (e: any) {
-      throw new BadRequestError("error creating course")
+      next(e)
     }
   };
 
@@ -71,7 +71,7 @@ export default class CourseController {
       const message: any = await CourseRabbitMQClient.produce(instructorId, operation);
       res.status(StatusCode.OK).json(JSON.parse(message.content.toString()));
     } catch (e: any) {
-      throw new BadRequestError("error getting all courses")
+      next(e)
     }
   };
 
@@ -115,8 +115,7 @@ export default class CourseController {
       const response: any = await CourseRabbitMQClient.produce(data, operation);
       res.status(StatusCode.Accepted).json(response);
     }catch(e:any){
-      throw new BadRequestError("error updating course")
-
+      next(e)
     }
   }
 
@@ -131,7 +130,7 @@ export default class CourseController {
       const response: any = await CourseRabbitMQClient.produce(courseId, operation)
       res.status(StatusCode.OK).json(response)
     }catch(e: any){
-      throw new BadRequestError("error deleting course")
+      next(e)
     }
   }
 
@@ -144,9 +143,11 @@ export default class CourseController {
       const courseId = req.params.id
       const operation = "get-course-wop"
       const response: any = await CourseRabbitMQClient.produce(courseId, operation)
-      res.status(StatusCode.OK).json(response)
+      const resp = response.content.toString()
+      const jsonData = JSON.parse(resp);
+      res.status(StatusCode.OK).json(jsonData)
     }catch(e: any){
-      throw new BadRequestError("error getting course")
+      next(e)
     }
   }
 
@@ -160,9 +161,25 @@ export default class CourseController {
       const response: any = await CourseRabbitMQClient.produce(null, operation)
       res.status(StatusCode.OK).json(response)
     }catch(e: any){
-      throw new BadRequestError("error getting all courses")
+      next(e)
     }
-  }
+  };
+
+  getTrendingCourses =  async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction 
+  ) => {
+    try{
+      const operation = "get-trending-courses"
+      const response: any = await CourseRabbitMQClient.produce(null, operation)
+      const resp = response.content.toString()
+      const jsonData = JSON.parse(resp);
+      res.status(StatusCode.OK).json(jsonData)
+    }catch(e: any){
+      next(e)
+    }
+  };
 }
 
 
