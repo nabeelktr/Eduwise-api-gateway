@@ -1,6 +1,6 @@
 import compression from 'compression';
 import cors from 'cors';
-import express, { NextFunction } from 'express'
+import express from 'express'
 import { Application } from 'express';
 import helmet from 'helmet';
 import logger from 'morgan'
@@ -11,6 +11,7 @@ import cookieParser from 'cookie-parser';
 import InstructorRabbitMQClient from './modules/instructor/rabbitmq/client';
 import courseRoute from './modules/course/route';
 import { errorHandler } from '@nabeelktr/error-handler';
+import adminRoute from './modules/admin/route';
 
 class App{
 
@@ -42,6 +43,7 @@ class App{
         this.app.use('/api/v1/auth', authRoute);
         this.app.use('/api/v1/instructor', instructorRoute);
         this.app.use('/api/v1/courses', courseRoute)
+        this.app.use('/api/v1/admin', adminRoute)
     }
 
     public startServer(port: number): void {

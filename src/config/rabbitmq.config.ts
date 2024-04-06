@@ -6,6 +6,7 @@ export default {
       queues: {
         instructorQueue: "instructor_queue",
         courseQueue: "course_queue",
+        adminQueue: "admin_queue"
       },
     },
   };
