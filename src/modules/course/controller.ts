@@ -6,7 +6,7 @@ import "dotenv/config";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { s3 } from "../../config/s3.config";
 import { StatusCode } from "../../interfaces/enums";
-import { BadRequestError } from "@nabeelktr/error-handler";
+
 
 
 export interface S3Params {

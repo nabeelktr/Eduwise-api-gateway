@@ -26,7 +26,38 @@ export default class AdminController {
     try{
       const operation = "get-all-users"
       const response: any = await AdminRabbitMQClient.produce(null, operation)
-      res.status(StatusCode.OK).json(response)
+      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()))
+    }catch(e: any){
+      next(e)
+    }
+  };
+
+  getAllInstructors =  async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try{
+      const operation = "get-all-instructors"
+      const response: any = await AdminRabbitMQClient.produce(null, operation)
+      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()))
+    }catch(e: any){
+      next(e)
+    }
+  };
+
+  deleteUser =  async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try{
+      const operation = "delete-user"
+      const userId = req.params.id;
+      const response: any = await AdminRabbitMQClient.produce(userId, operation)
+      console.log("response", JSON.parse(response.content.toString()));
+
+      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()))
     }catch(e: any){
       next(e)
     }
