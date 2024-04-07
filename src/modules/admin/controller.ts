@@ -8,7 +8,6 @@ import { s3 } from "../../config/s3.config";
 import { StatusCode } from "../../interfaces/enums";
 import { BadRequestError } from "@nabeelktr/error-handler";
 
-
 export interface S3Params {
   Bucket: string;
   Key: string;
@@ -17,53 +16,63 @@ export interface S3Params {
 }
 
 export default class AdminController {
-  
-  getAllUsers =  async (
+  getAllUsers = async (
     req: CustomRequest,
     res: Response,
     next: NextFunction
   ) => {
-    try{
-      const operation = "get-all-users"
-      const response: any = await AdminRabbitMQClient.produce(null, operation)
-      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()))
-    }catch(e: any){
-      next(e)
+    try {
+      const operation = "get-all-users";
+      const response: any = await AdminRabbitMQClient.produce(null, operation);
+      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()));
+    } catch (e: any) {
+      next(e);
     }
   };
 
-  getAllInstructors =  async (
+  getAllInstructors = async (
     req: CustomRequest,
     res: Response,
     next: NextFunction
   ) => {
-    try{
-      const operation = "get-all-instructors"
-      const response: any = await AdminRabbitMQClient.produce(null, operation)
-      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()))
-    }catch(e: any){
-      next(e)
+    try {
+      const operation = "get-all-instructors";
+      const response: any = await AdminRabbitMQClient.produce(null, operation);
+      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()));
+    } catch (e: any) {
+      next(e);
     }
   };
 
-  deleteUser =  async (
+  deleteUser = async (
     req: CustomRequest,
     res: Response,
     next: NextFunction
   ) => {
-    try{
-      const operation = "delete-user"
+    try {
+      const operation = "delete-user";
       const userId = req.params.id;
-      const response: any = await AdminRabbitMQClient.produce(userId, operation)
-      console.log("response", JSON.parse(response.content.toString()));
-
-      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()))
-    }catch(e: any){
-      next(e)
+      const response: any = await AdminRabbitMQClient.produce(
+        userId,
+        operation
+      );
+      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()));
+    } catch (e: any) {
+      next(e);
     }
   };
 
- 
+  addFAQ = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+      const operation = "add-faq";
+      const questions = req.body
+      const response: any = await AdminRabbitMQClient.produce(
+        questions,
+        operation
+      );
+      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()));
+    } catch (e: any) {
+      next(e);
+    }
+  };
 }
-
-
