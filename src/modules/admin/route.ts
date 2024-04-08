@@ -8,6 +8,9 @@ const controller = new adminController();
 adminRoute.get("/get-users", isValidated, controller.getAllUsers);
 adminRoute.get("/get-instructors", isValidated, controller.getAllInstructors);
 adminRoute.delete("/delete-user/:id", isValidated, controller.deleteUser);
-adminRoute.delete("/add-faq", isValidated, controller.addFAQ);
+adminRoute.post("/add-faq", isValidated, controller.addFAQ);
+adminRoute.get("/get-faq", isValidated, controller.getFAQ);
+adminRoute.post("/add-categories", isValidated, controller.addCategories);
+adminRoute.get("/get-categories", isValidated, controller.getCategories);
 
 export default adminRoute;

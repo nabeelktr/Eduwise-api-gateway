@@ -65,9 +65,49 @@ export default class AdminController {
   addFAQ = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
       const operation = "add-faq";
-      const questions = req.body
+      const questions = req.body;
       const response: any = await AdminRabbitMQClient.produce(
         questions,
+        operation
+      );
+      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()));
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  getFAQ = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+      const operation = "get-faq";
+      const response: any = await AdminRabbitMQClient.produce(
+        null,
+        operation
+      );
+      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()));
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  addCategories = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+      const operation = "add-categories";
+      const categories = req.body;
+      const response: any = await AdminRabbitMQClient.produce(
+        categories,
+        operation
+      );
+      res.status(StatusCode.OK).json(JSON.parse(response.content.toString()));
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  getCategories = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+      const operation = "get-categories";
+      const response: any = await AdminRabbitMQClient.produce(
+        null,
         operation
       );
       res.status(StatusCode.OK).json(JSON.parse(response.content.toString()));
