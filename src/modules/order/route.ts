@@ -7,7 +7,8 @@ const orderRoute:Application = express();
 const controller = new orderController();
 
 
-orderRoute.post('/register', isValidated,  controller.register)
+orderRoute.get('/stripe-publishkey',  controller.sendPublishKey)
+orderRoute.post('/payment',  controller.newPayment)
 
 
 export default orderRoute
