@@ -9,6 +9,7 @@ const controller = new orderController();
 
 orderRoute.get('/stripe-publishkey',  controller.sendPublishKey)
 orderRoute.post('/payment',  controller.newPayment)
+orderRoute.post('/create-order',isValidated,  controller.createOrder)
 
 
 export default orderRoute

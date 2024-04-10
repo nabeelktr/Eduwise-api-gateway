@@ -48,6 +48,11 @@ message GetUserResponse{
   string name = 2;
   string role = 4;
   string is_verified = 5;
+  repeated Courses courses = 7;
+}
+
+message Courses{
+  string course_id = 1;
 }
 
 message UserRes{
