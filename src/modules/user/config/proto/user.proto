@@ -11,6 +11,12 @@ service User {
   rpc UpdateUserInfo(UpdateUserInfoReq) returns(UserRes) {};
   rpc UpdateAvatar(AvatarReq) returns(UserRes) {};
   rpc UpdatePassword(PasswordReq) returns(UserRes) {};
+  rpc UpdateCourseList(CourseList) returns(UserRes) {};
+}
+
+message CourseList{
+  string course_id= 1;
+  string user_id = 2;
 }
 
 message PasswordReq{
