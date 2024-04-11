@@ -151,6 +151,23 @@ export default class CourseController {
     }
   }
 
+  getCourseContent =  async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try{
+      const courseId = req.params.id
+      const operation = "get-course-content"
+      const response: any = await CourseRabbitMQClient.produce(courseId, operation)
+      const resp = response.content.toString()
+      const jsonData = JSON.parse(resp);
+      res.status(StatusCode.OK).json(jsonData)
+    }catch(e: any){
+      next(e)
+    }
+  }
+
   getAllCourses =  async (
     req: CustomRequest,
     res: Response,

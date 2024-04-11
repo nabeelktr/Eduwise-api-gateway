@@ -101,6 +101,7 @@ message LoginResponse {
     string avatar = 3;
     string role = 4;
     string is_verified = 5;
+    repeated Courses courses = 6;
   }
 }
 

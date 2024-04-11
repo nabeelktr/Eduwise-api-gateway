@@ -1,7 +1,7 @@
 import { NextFunction, Response } from "express";
 import { CustomRequest } from "../interfaces/IRequest";
 import orderRabbitMQClient from "./rabbitmq/client";
-import courseRabbitMQClient from "../course/rabbitmq/client"
+import courseRabbitMQClient from "../course/rabbitmq/client";
 import "dotenv/config";
 import { StatusCode } from "../../interfaces/enums";
 import { NotFoundError } from "@nabeelktr/error-handler";
@@ -76,22 +76,30 @@ export default class orderController {
             operation
           );
 
-          //notification model user title message
-
-          //user course list
-          
-
-          //purchased count
-          const courseResponse: any = await courseRabbitMQClient.produce(
-            courseId,
-            "update-purchase-count"
-          )
-          res.status(StatusCode.Created).json(response);
         }
+        //notification model user title message
+
+        //user course list
+        UserClient.UpdateCourseList(
+          { userId: userId, courseId: courseId },
+          async (err, result) => {
+            if (err) {
+              res
+                .status(StatusCode.BadGateway)
+                .json({ success: false, message: err.details });
+            } else {
+              //purchased count
+              const courseResponse: any = await courseRabbitMQClient.produce(
+                courseId,
+                "update-purchase-count"
+              );
+              res.status(StatusCode.Created).json(courseResponse);
+            }
+          }
+        );
       });
     } catch (e: any) {
       next(new NotFoundError());
     }
   };
-
 }

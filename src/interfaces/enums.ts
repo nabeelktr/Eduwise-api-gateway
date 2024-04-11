@@ -61,7 +61,7 @@ export enum StatusCode {
     // Server error responses (500–599)
     InternalServerError = 500,
     NotImplemented = 501,
-    BadGateway = 502,
+     BadGateway = 502,
     ServiceUnavailable = 503,
     GatewayTimeout = 504,
     HTTPVersionNotSupported = 505,
