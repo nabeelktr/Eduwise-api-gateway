@@ -6,8 +6,7 @@ import "dotenv/config";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { s3 } from "../../config/s3.config";
 import { StatusCode } from "../../interfaces/enums";
-
-
+import { UserClient } from "../user/config/grpc-client/user.client";
 
 export interface S3Params {
   Bucket: string;
@@ -26,23 +25,23 @@ export default class CourseController {
       const body = req.body;
       const file = req.file;
       let url = "";
-      if(file){
-      const randomName = (bytes = 32) =>
-        crypto.randomBytes(bytes).toString("hex");
-      const bucketName = process.env.S3_BUCKET_NAME || "";
-      const imageName = `eduwise-course-thumbnail/${randomName()}`;
+      if (file) {
+        const randomName = (bytes = 32) =>
+          crypto.randomBytes(bytes).toString("hex");
+        const bucketName = process.env.S3_BUCKET_NAME || "";
+        const imageName = `eduwise-course-thumbnail/${randomName()}`;
 
-      const params: S3Params = {
-        Bucket: bucketName,
-        Key: imageName,
-        Body: file?.buffer,
-        ContentType: file?.mimetype,
-      };
+        const params: S3Params = {
+          Bucket: bucketName,
+          Key: imageName,
+          Body: file?.buffer,
+          ContentType: file?.mimetype,
+        };
 
-      const command = new PutObjectCommand(params);
-      await s3.send(command);
-      url = `https://eduwise.s3.ap-south-1.amazonaws.com/${imageName}`;
-    }
+        const command = new PutObjectCommand(params);
+        await s3.send(command);
+        url = `https://eduwise.s3.ap-south-1.amazonaws.com/${imageName}`;
+      }
       body.benefits = JSON.parse(body.benefits);
       body.prerequisites = JSON.parse(body.prerequisites);
       body.courseContentData = JSON.parse(body.courseContentData);
@@ -54,9 +53,22 @@ export default class CourseController {
         thumbnail: url,
       };
       const response: any = await CourseRabbitMQClient.produce(data, operation);
-      res.status(StatusCode.Created).json({success: true});
+      const result = JSON.parse(response.content.toString())
+      const courseId = result._id;
+      const userId = req.userId;
+      UserClient.UpdateCourseList(
+        { userId: userId, courseId: courseId },
+        async (err, result) => {
+          if (err) {
+            res
+              .status(StatusCode.BadGateway)
+              .json({ success: false, message: err.details });
+          }
+        }
+      );
+      res.status(StatusCode.Created).json({ success: true });
     } catch (e: any) {
-      next(e)
+      next(e);
     }
   };
 
@@ -68,10 +80,13 @@ export default class CourseController {
     try {
       const operation = "get-courses";
       const instructorId = req.userId;
-      const message: any = await CourseRabbitMQClient.produce(instructorId, operation);
+      const message: any = await CourseRabbitMQClient.produce(
+        instructorId,
+        operation
+      );
       res.status(StatusCode.OK).json(JSON.parse(message.content.toString()));
     } catch (e: any) {
-      next(e)
+      next(e);
     }
   };
 
@@ -80,26 +95,26 @@ export default class CourseController {
     res: Response,
     next: NextFunction
   ) => {
-    try{
+    try {
       const body = req.body;
       const file = req.file;
       let url;
-      if(file){
-      const randomName = (bytes = 32) =>
-        crypto.randomBytes(bytes).toString("hex");
-      const bucketName = process.env.S3_BUCKET_NAME || "";
-      const imageName = `eduwise-course-thumbnail/${randomName()}`;
+      if (file) {
+        const randomName = (bytes = 32) =>
+          crypto.randomBytes(bytes).toString("hex");
+        const bucketName = process.env.S3_BUCKET_NAME || "";
+        const imageName = `eduwise-course-thumbnail/${randomName()}`;
 
-      const params: S3Params = {
-        Bucket: bucketName,
-        Key: imageName,
-        Body: file?.buffer,
-        ContentType: file?.mimetype,
-      };
+        const params: S3Params = {
+          Bucket: bucketName,
+          Key: imageName,
+          Body: file?.buffer,
+          ContentType: file?.mimetype,
+        };
 
-      const command = new PutObjectCommand(params);
-      await s3.send(command);
-      url = `https://eduwise.s3.ap-south-1.amazonaws.com/${imageName}`;
+        const command = new PutObjectCommand(params);
+        await s3.send(command);
+        url = `https://eduwise.s3.ap-south-1.amazonaws.com/${imageName}`;
       }
 
       body.benefits = JSON.parse(body.benefits);
@@ -109,94 +124,156 @@ export default class CourseController {
       const data = {
         instructorId: req.userId,
         ...body,
-        thumbnail: url
+        thumbnail: url,
       };
-  
+
       const response: any = await CourseRabbitMQClient.produce(data, operation);
       res.status(StatusCode.Accepted).json(response);
-    }catch(e:any){
-      next(e)
+    } catch (e: any) {
+      next(e);
     }
-  }
+  };
 
   deleteCourse = async (
     req: CustomRequest,
     res: Response,
     next: NextFunction
   ) => {
-    try{
-      const courseId = req.params.id
-      const operation = "delete-course"
-      const response: any = await CourseRabbitMQClient.produce(courseId, operation)
-      res.status(StatusCode.OK).json(response)
-    }catch(e: any){
-      next(e)
-    }
-  }
-
-  getSingleCourse =  async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try{
-      const courseId = req.params.id
-      const operation = "get-course-wop"
-      const response: any = await CourseRabbitMQClient.produce(courseId, operation)
-      const resp = response.content.toString()
-      const jsonData = JSON.parse(resp);
-      res.status(StatusCode.OK).json(jsonData)
-    }catch(e: any){
-      next(e)
-    }
-  }
-
-  getCourseContent =  async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try{
-      const courseId = req.params.id
-      const operation = "get-course-content"
-      const response: any = await CourseRabbitMQClient.produce(courseId, operation)
-      const resp = response.content.toString()
-      const jsonData = JSON.parse(resp);
-      res.status(StatusCode.OK).json(jsonData)
-    }catch(e: any){
-      next(e)
-    }
-  }
-
-  getAllCourses =  async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try{
-      const operation = "get-all-courses"
-      const response: any = await CourseRabbitMQClient.produce(null, operation)
-      res.status(StatusCode.OK).json(response)
-    }catch(e: any){
-      next(e)
+    try {
+      const courseId = req.params.id;
+      const operation = "delete-course";
+      const response: any = await CourseRabbitMQClient.produce(
+        courseId,
+        operation
+      );
+      res.status(StatusCode.OK).json(response);
+    } catch (e: any) {
+      next(e);
     }
   };
 
-  getTrendingCourses =  async (
+  getSingleCourse = async (
     req: CustomRequest,
     res: Response,
-    next: NextFunction 
+    next: NextFunction
+  ) => {
+    try {
+      const courseId = req.params.id;
+      const operation = "get-course-wop";
+      const response: any = await CourseRabbitMQClient.produce(
+        courseId,
+        operation
+      );
+      const resp = response.content.toString();
+      const jsonData = JSON.parse(resp);
+      res.status(StatusCode.OK).json(jsonData);
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  getCourseContent = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const courseId = req.params.id;
+      const operation = "get-course-content";
+      const response: any = await CourseRabbitMQClient.produce(
+        courseId,
+        operation
+      );
+      const resp = response.content.toString();
+      const jsonData = JSON.parse(resp);
+      res.status(StatusCode.OK).json(jsonData);
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  getAllCourses = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const operation = "get-all-courses";
+      const response: any = await CourseRabbitMQClient.produce(null, operation);
+      res.status(StatusCode.OK).json(response);
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  getTrendingCourses = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const operation = "get-trending-courses";
+      const response: any = await CourseRabbitMQClient.produce(null, operation);
+      const resp = response.content.toString();
+      const jsonData = JSON.parse(resp);
+      res.status(StatusCode.OK).json(jsonData);
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  addQuestion = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const data = req.body;
+      const operation = "add-question";
+      const response: any = await CourseRabbitMQClient.produce(data, operation);
+      const resp = response.content.toString();
+      const jsonData = JSON.parse(resp);
+      res.status(StatusCode.OK).json(jsonData);
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  addAnswer = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const data = req.body;
+      const operation = "add-answer";
+      const response: any = await CourseRabbitMQClient.produce(data, operation);
+      const resp = response.content.toString();
+      const jsonData = JSON.parse(resp);
+      res.status(StatusCode.OK).json(jsonData);
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  addReview = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
   ) => {
     try{
-      const operation = "get-trending-courses"
-      const response: any = await CourseRabbitMQClient.produce(null, operation)
-      const resp = response.content.toString()
+      let data = req.body;
+      data.userId = req.userId;
+      console.log(data);
+      const operation = "add-review";
+      const response: any = await CourseRabbitMQClient.produce(data, operation);
+      const resp = response.content.toString();
       const jsonData = JSON.parse(resp);
-      res.status(StatusCode.OK).json(jsonData)
+      res.status(StatusCode.OK).json(jsonData);
     }catch(e: any){
       next(e)
     }
-  };
+  }
 }
 
 

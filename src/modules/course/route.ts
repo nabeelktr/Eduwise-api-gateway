@@ -18,6 +18,9 @@ courseRoute.get('/get-course-wop/:id', controller.getSingleCourse)
 courseRoute.get('/get-course-content/:id', controller.getCourseContent)
 courseRoute.get('/get-all-courses', controller.getAllCourses)
 courseRoute.get('/get-trending-courses', controller.getTrendingCourses)
+courseRoute.post('/add-question',isValidated, controller.addQuestion)
+courseRoute.post('/add-answer',isValidated, controller.addAnswer)
+courseRoute.post('/add-review',isValidated, controller.addReview)
 
 
 
