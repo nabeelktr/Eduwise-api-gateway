@@ -13,12 +13,17 @@ import courseRoute from "./modules/course/route";
 import { errorHandler } from "@nabeelktr/error-handler";
 import adminRoute from "./modules/admin/route";
 import orderRoute from "./modules/order/route";
+import http from "http";
+import { initSocketServer } from "./utils/socket";
 
 class App {
   public app: Application;
+  server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
 
   constructor() {
     this.app = express();
+    this.server = http.createServer(this.app);
+    initSocketServer(this.server);
     this.applyMiddleware();
     this.routes();
     InstructorRabbitMQClient.initialize();
@@ -49,7 +54,7 @@ class App {
   }
 
   public startServer(port: number): void {
-    this.app.listen(port, () => {
+    this.server.listen(port, () => {
       console.log(`API-Gateway started on ${port}`);
     });
   }
