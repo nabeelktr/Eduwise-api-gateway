@@ -11,6 +11,6 @@ adminRoute.delete("/delete-user/:id", isValidated, controller.deleteUser);
 adminRoute.post("/add-faq", isValidated, controller.addFAQ);
 adminRoute.get("/get-faq", isValidated, controller.getFAQ);
 adminRoute.post("/add-categories", isValidated, controller.addCategories);
-adminRoute.get("/get-categories", isValidated, controller.getCategories);
+adminRoute.get("/get-categories", controller.getCategories);
 
 export default adminRoute;

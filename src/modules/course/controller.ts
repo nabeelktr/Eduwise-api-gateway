@@ -1,6 +1,7 @@
 import { NextFunction, Response } from "express";
 import { CustomRequest } from "../interfaces/IRequest";
 import CourseRabbitMQClient from "./rabbitmq/client";
+import NotificationClient from "../notification/rabbitmq/client";
 import crypto from "crypto";
 import "dotenv/config";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
@@ -53,7 +54,7 @@ export default class CourseController {
         thumbnail: url,
       };
       const response: any = await CourseRabbitMQClient.produce(data, operation);
-      const result = JSON.parse(response.content.toString())
+      const result = JSON.parse(response.content.toString());
       const courseId = result._id;
       const userId = req.userId;
       UserClient.UpdateCourseList(
@@ -200,7 +201,8 @@ export default class CourseController {
     try {
       const operation = "get-all-courses";
       const response: any = await CourseRabbitMQClient.produce(null, operation);
-      res.status(StatusCode.OK).json(response);
+      const jsonData = JSON.parse(response.content.toString());
+      res.status(StatusCode.OK).json(jsonData);
     } catch (e: any) {
       next(e);
     }
@@ -232,6 +234,14 @@ export default class CourseController {
       const operation = "add-question";
       const response: any = await CourseRabbitMQClient.produce(data, operation);
       const resp = response.content.toString();
+      const notificationOperation = "create-notification";
+      const noticationData = {
+        title: "New Question",
+        status: "unread",
+        message: `You have new question from ${data.questionList.user.courseName}`,
+        instructorId: data.questionList.user.instructorId,
+      };
+      await NotificationClient.produce(noticationData, notificationOperation);
       const jsonData = JSON.parse(resp);
       res.status(StatusCode.OK).json(jsonData);
     } catch (e: any) {
@@ -239,11 +249,7 @@ export default class CourseController {
     }
   };
 
-  addAnswer = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction
-  ) => {
+  addAnswer = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
       const operation = "add-answer";
@@ -256,12 +262,8 @@ export default class CourseController {
     }
   };
 
-  addReview = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try{
+  addReview = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
       let data = req.body;
       data.userId = req.userId;
       console.log(data);
@@ -270,10 +272,8 @@ export default class CourseController {
       const resp = response.content.toString();
       const jsonData = JSON.parse(resp);
       res.status(StatusCode.OK).json(jsonData);
-    }catch(e: any){
-      next(e)
+    } catch (e: any) {
+      next(e);
     }
-  }
+  };
 }
-
-
