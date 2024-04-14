@@ -7,7 +7,7 @@ export const initSocketServer = (server: http.Server) => {
         console.log("user connected");
 
         socket.on("notification", (data) => {
-            socket.emit("newNotification", data)
+            io.emit("newNotification", data)
         })
 
         socket.on("disconnect", () => {

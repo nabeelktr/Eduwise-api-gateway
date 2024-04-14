@@ -276,4 +276,18 @@ export default class CourseController {
       next(e);
     }
   };
+
+  getNotifications = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+      const instructorId = req.params.id;
+      const operation = "get-all-notifications";
+      const response: any = await NotificationClient.produce(instructorId, operation);
+      const resp = response.content.toString();
+      const jsonData = JSON.parse(resp);
+      res.status(StatusCode.OK).json(jsonData);
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
 }
