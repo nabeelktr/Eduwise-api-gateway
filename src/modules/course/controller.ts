@@ -290,4 +290,17 @@ export default class CourseController {
     }
   };
 
+  updateNotification = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+      const id = req.params.id;
+      const operation = "update-notification";
+      const response: any = await NotificationClient.produce(id, operation);
+      const resp = response.content.toString();
+      const jsonData = JSON.parse(resp);
+      res.status(StatusCode.OK).json(jsonData);
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
 }
