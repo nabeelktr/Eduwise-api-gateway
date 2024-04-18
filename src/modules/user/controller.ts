@@ -6,7 +6,6 @@ import { CustomRequest } from "../interfaces/IRequest";
 import { StatusCode } from "../../interfaces/enums";
 
 export default class userController {
-  
   register = (req: Request, res: Response, next: NextFunction) => {
     UserClient.Register(req.body, (err, result) => {
       if (err) {
@@ -29,7 +28,9 @@ export default class userController {
   login = (req: Request, res: Response, next: NextFunction) => {
     UserClient.Login(req.body, (err, result) => {
       if (err) {
-        res.status(StatusCode.BadRequest).json({ success: false, message: err.details });
+        res
+          .status(StatusCode.BadRequest)
+          .json({ success: false, message: err.details });
       } else {
         const options = generateTokenOptions();
         res.cookie(
@@ -69,12 +70,16 @@ export default class userController {
         { token: req.cookies?.accessToken },
         (err, result) => {
           if (err) {
-            res.status(StatusCode.BadRequest).json({ success: false, message: err.details });
+            res
+              .status(StatusCode.BadRequest)
+              .json({ success: false, message: err.details });
           } else {
             const userId = result?.userId;
             UserClient.GetUser({ id: userId }, (err, result) => {
               if (err) {
-                res.status(StatusCode.NotFound).json({ success: false, message: err.details });
+                res
+                  .status(StatusCode.NotFound)
+                  .json({ success: false, message: err.details });
               } else {
                 res.status(StatusCode.OK).json({ user: result });
               }
@@ -92,7 +97,9 @@ export default class userController {
       const { email, name, avatar } = req.body;
       UserClient.SocialAuth({ name, email, avatar }, (err, result) => {
         if (err) {
-          res.status(StatusCode.BadRequest).json({ success: false, message: err.details });
+          res
+            .status(StatusCode.BadRequest)
+            .json({ success: false, message: err.details });
         } else {
           const options = generateTokenOptions();
           res.cookie(
@@ -119,7 +126,9 @@ export default class userController {
       const userId = req.userId;
       UserClient.UpdateUserInfo({ userId, name }, (err, result) => {
         if (err) {
-          res.status(StatusCode.BadRequest).json({ success: false, message: err.details });
+          res
+            .status(StatusCode.BadRequest)
+            .json({ success: false, message: err.details });
         } else {
           res.status(StatusCode.Created).json(result);
         }
@@ -175,6 +184,25 @@ export default class userController {
           }
         }
       );
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
+  getUsersAnalytics = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const instructorId = req.params.id;
+      UserClient.GetUsersAnalytics({ instructorId }, (err, result) => {
+        if (err) {
+          res.status(StatusCode.BadRequest).json({ message: err.details });
+        } else {
+          res.status(StatusCode.Created).json(result);
+        }
+      });
     } catch (e: any) {
       next(e);
     }

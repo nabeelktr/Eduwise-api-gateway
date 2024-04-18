@@ -75,9 +75,7 @@ export default class orderController {
             data,
             operation
           );
-
         }
-        //notification model user title message
 
         //user course list
         UserClient.UpdateCourseList(
@@ -100,6 +98,24 @@ export default class orderController {
       });
     } catch (e: any) {
       next(new NotFoundError());
+    }
+  };
+
+  getOrdersAnalytics = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const instructorId = req.params.id;
+      const operation = "orders-analytics";
+      const response: any = await orderRabbitMQClient.produce(
+        instructorId,
+        operation
+      );
+      res.status(StatusCode.OK).json(response);
+    } catch (e: any) {
+      next(e);
     }
   };
 }

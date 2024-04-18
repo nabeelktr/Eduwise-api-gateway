@@ -59,7 +59,11 @@ class RabbitMQClient{
         if(!this.isInitialized){
             await this.initialize()
         }
-        return await this.producer?.produceMessages(data, operation);
+        try{
+            return await this.producer?.produceMessages(data, operation);
+        }catch(error){
+            throw new BadRequestError("rabbitmq error")
+        }
     }
 }
 

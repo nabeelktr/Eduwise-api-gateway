@@ -27,6 +27,12 @@ export default class Producer {
 
     return new Promise((res, rej) => {
       this.eventEmitter.once(uuid, async (data) => {
+        const reply = JSON.parse(data.content.toString());
+        if (reply.error) {
+          rej(new Error("RabbitMQ error"));
+        } else {
+          res(data);
+        }
         res(data);
       });
     });

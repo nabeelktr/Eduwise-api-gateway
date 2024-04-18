@@ -12,6 +12,20 @@ service User {
   rpc UpdateAvatar(AvatarReq) returns(UserRes) {};
   rpc UpdatePassword(PasswordReq) returns(UserRes) {};
   rpc UpdateCourseList(CourseList) returns(UserRes) {};
+  rpc GetUsersAnalytics(UserAnalytics) returns(UserAnalyticsRes) {};
+}
+
+message UserAnalytics{
+  string instructor_id = 1;
+}
+
+message MonthData {
+  string month = 1;
+  int32 count = 2;
+}
+
+message UserAnalyticsRes {
+  repeated MonthData data = 1;
 }
 
 message CourseList{

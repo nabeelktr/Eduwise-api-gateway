@@ -1,12 +1,9 @@
 import { NextFunction, Response } from "express";
 import { CustomRequest } from "../interfaces/IRequest";
 import AdminRabbitMQClient from "./rabbitmq/client";
-import crypto from "crypto";
 import "dotenv/config";
-
-import { s3 } from "../../config/s3.config";
 import { StatusCode } from "../../interfaces/enums";
-import { BadRequestError } from "@nabeelktr/error-handler";
+import { retryAndBreakerOperation } from "../../retry-handler";
 
 export interface S3Params {
   Bucket: string;
@@ -23,7 +20,7 @@ export default class AdminController {
   ) => {
     try {
       const operation = "get-all-users";
-      const response: any = await AdminRabbitMQClient.produce(null, operation);
+      const response: any = await retryAndBreakerOperation(() => AdminRabbitMQClient.produce(null, operation));
       res.status(StatusCode.OK).json(JSON.parse(response.content.toString()));
     } catch (e: any) {
       next(e);

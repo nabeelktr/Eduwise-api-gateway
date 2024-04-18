@@ -19,6 +19,8 @@ userRoute.get('/logout', controller.logout)
 userRoute.post('/update-user-info', isValidated, controller.updateUserInfo)
 userRoute.post('/update-user-avatar', isValidated, upload.single('avatar'), controller.updateUserAvatar)
 userRoute.post('/update-user-password', isValidated, controller.updateUserPassword)
+userRoute.get('/get-users-analytics/:id',isValidated, controller.getUsersAnalytics)
+
 
 
 export default userRoute
