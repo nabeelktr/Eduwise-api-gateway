@@ -316,4 +316,18 @@ export default class CourseController {
     }
   };
 
+  searchCourses = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+      const searchTerm = req.query.term;
+      console.log(searchTerm);
+      const operation = "search-courses";
+      const response: any = await CourseRabbitMQClient.produce(searchTerm, operation);
+      const resp = response.content.toString();
+      const jsonData = JSON.parse(resp);
+      res.status(StatusCode.OK).json(jsonData);
+    } catch (e: any) {
+      next(e);
+    }
+  };
+
 }

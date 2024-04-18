@@ -24,6 +24,7 @@ courseRoute.post('/add-review',isValidated, controller.addReview)
 courseRoute.get('/get-all-notification/:id',isValidated, controller.getNotifications)
 courseRoute.get('/update-notification/:id',isValidated, controller.updateNotification)
 courseRoute.get('/get-course-analytics/:id',isValidated, controller.getCourseAnalytics)
+courseRoute.get('/search-courses', controller.searchCourses)
 
 
 
