@@ -277,11 +277,18 @@ export default class CourseController {
     }
   };
 
-  getNotifications = async (req: CustomRequest, res: Response, next: NextFunction) => {
+  getNotifications = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const instructorId = req.params.id;
       const operation = "get-all-notifications";
-      const response: any = await NotificationClient.produce(instructorId, operation);
+      const response: any = await NotificationClient.produce(
+        instructorId,
+        operation
+      );
       const resp = response.content.toString();
       const jsonData = JSON.parse(resp);
       res.status(StatusCode.OK).json(jsonData);
@@ -290,7 +297,11 @@ export default class CourseController {
     }
   };
 
-  updateNotification = async (req: CustomRequest, res: Response, next: NextFunction) => {
+  updateNotification = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const id = req.params.id;
       const operation = "update-notification";
@@ -303,11 +314,18 @@ export default class CourseController {
     }
   };
 
-  getCourseAnalytics = async (req: CustomRequest, res: Response, next: NextFunction) => {
+  getCourseAnalytics = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const instructorId = req.params.id;
       const operation = "course-analytics";
-      const response: any = await CourseRabbitMQClient.produce(instructorId, operation);
+      const response: any = await CourseRabbitMQClient.produce(
+        instructorId,
+        operation
+      );
       const resp = response.content.toString();
       const jsonData = JSON.parse(resp);
       res.status(StatusCode.OK).json(jsonData);
@@ -316,12 +334,18 @@ export default class CourseController {
     }
   };
 
-  searchCourses = async (req: CustomRequest, res: Response, next: NextFunction) => {
+  searchCourses = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const searchTerm = req.query.term;
-      console.log(searchTerm);
       const operation = "search-courses";
-      const response: any = await CourseRabbitMQClient.produce(searchTerm, operation);
+      const response: any = await CourseRabbitMQClient.produce(
+        searchTerm,
+        operation
+      );
       const resp = response.content.toString();
       const jsonData = JSON.parse(resp);
       res.status(StatusCode.OK).json(jsonData);
@@ -330,4 +354,33 @@ export default class CourseController {
     }
   };
 
+  getUserCourses = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const userId = req.userId;
+      UserClient.GetUser({ id: userId }, async (err, result) => {
+        if (err) {
+          res
+            .status(StatusCode.NotFound)
+            .json({ success: false, message: err.details });
+        } else {
+
+          const userIds = result?.courses
+          const operation = "get-user-courses";
+          const response: any = await CourseRabbitMQClient.produce(
+            userIds,
+            operation
+          );
+          const resp = response.content.toString();
+          const jsonData = JSON.parse(resp);
+          res.status(StatusCode.OK).json(jsonData);
+        }
+      });
+    } catch (e: any) {
+      next(e);
+    }
+  };
 }

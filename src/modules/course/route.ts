@@ -25,6 +25,7 @@ courseRoute.get('/get-all-notification/:id',isValidated, controller.getNotificat
 courseRoute.get('/update-notification/:id',isValidated, controller.updateNotification)
 courseRoute.get('/get-course-analytics/:id',isValidated, controller.getCourseAnalytics)
 courseRoute.get('/search-courses', controller.searchCourses)
+courseRoute.get('/get-user-courses',isValidated, controller.getUserCourses)
 
 
 
