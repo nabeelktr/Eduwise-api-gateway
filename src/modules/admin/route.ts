@@ -9,7 +9,7 @@ adminRoute.get("/get-users", isValidated, controller.getAllUsers);
 adminRoute.get("/get-instructors", isValidated, controller.getAllInstructors);
 adminRoute.delete("/delete-user/:id", isValidated, controller.deleteUser);
 adminRoute.post("/add-faq", isValidated, controller.addFAQ);
-adminRoute.get("/get-faq", isValidated, controller.getFAQ);
+adminRoute.get("/get-faq", controller.getFAQ);
 adminRoute.post("/add-categories", isValidated, controller.addCategories);
 adminRoute.get("/get-categories", controller.getCategories);
 
