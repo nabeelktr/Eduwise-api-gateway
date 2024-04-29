@@ -15,6 +15,8 @@ import adminRoute from "./modules/admin/route";
 import orderRoute from "./modules/order/route";
 import http from "http";
 import { initSocketServer } from "./utils/socket";
+import { limiter } from "./utils/rateLimitter";
+import "dotenv/config"
 
 class App {
   public app: Application;
@@ -42,6 +44,7 @@ class App {
     this.app.use(logger("dev"));
     this.app.use(cookieParser());
     this.app.use(errorHandler);
+    this.app.use(limiter)
   }
 
   private routes(): void {

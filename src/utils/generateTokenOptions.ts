@@ -5,8 +5,9 @@ interface ItokenOptions {
     expires: Date;
     maxAge: number;
     httpOnly: boolean;
-    sameSite: "lax" | "strict" | "none" | undefined;
+    sameSite?: "lax" | "strict" | "none" | undefined;
     secure?: boolean;
+    domain?: string;
 }
 
 export const generateTokenOptions = () => {
@@ -18,15 +19,15 @@ export const generateTokenOptions = () => {
         expires: new Date(Date.now() + accessExpire * 24 * 60 * 60 * 1000),
         maxAge: accessExpire * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "lax",
-        secure: true
+        sameSite: "none",
+        secure: true,
     } 
     const refreshTokenOptions: ItokenOptions = {
         expires: new Date(Date.now() + refreshExpire * 24 * 60 * 60 * 1000),
         maxAge: refreshExpire * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "lax",
-        secure: true
+        sameSite: "none",
+        secure: true,
     } 
 
     // only set true in production

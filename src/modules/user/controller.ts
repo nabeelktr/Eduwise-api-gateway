@@ -50,8 +50,18 @@ export default class userController {
 
   logout = (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.cookie("accessToken", "", { maxAge: 1 });
-      res.cookie("refreshToken", "", { maxAge: 1 });
+      res.cookie("accessToken", "", { 
+        maxAge: 1,
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+       });
+      res.cookie("refreshToken", "", { 
+        maxAge: 1,
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+       });
       const cookies = req.cookies;
       for (const cookieName in cookies) {
         res.clearCookie(cookieName);
