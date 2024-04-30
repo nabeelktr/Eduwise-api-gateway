@@ -26,9 +26,14 @@ export default class Producer {
     );
 
     return new Promise((res, rej) => {
-      this.eventEmitter.once(uuid, async (data) => {
-        res(data);
-      });
+      if(uuid){
+        this.eventEmitter.once(uuid, async (data) => {
+          res(data);
+        });
+      }else{
+        rej
+        console.log("uuid not defined");
+      }
     });
   }
 }
