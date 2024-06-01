@@ -21,27 +21,6 @@ export const isValidated = AsyncHandler(
   }
 );
 
-export const authorizeRoles = (...roles: UserRole[]) => {
-  return (req: CustomRequest, res: Response, next: NextFunction) => {
-    if (req.role && Object.values(UserRole).includes(req.role as UserRole)) {
-      if (!roles.includes(req.role as UserRole)) {
-        res
-          .status(StatusCode.NotAcceptable)
-          .json({
-            success: false,
-            message: `Role: ${req.role} is not allowed to access this resource`,
-          });
-        return;
-      }
-    } else {
-      res
-        .status(StatusCode.NotAcceptable)
-        .json({ success: false, message: `Invalid role provided` });
-      return;
-    }
-    next();
-  };
-};
 
 export const refreshToken = (
   req: Request,
@@ -74,3 +53,4 @@ export const refreshToken = (
     res.status(StatusCode.Unauthorized).json({message: "Token is missing"});
   }
 };
+
